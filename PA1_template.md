@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 This paper shows some analysis on the data from a personal activity monitoring device as part of the Reproducible Reserach course at Coursera. 
 As stated in the project description, this device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day. The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
@@ -12,15 +7,31 @@ As stated in the project description, this device collects data at 5 minute inte
 ## Loading and preprocessing the data
 
 The initial data set is loaded from the file and the structure of the data is inspected.
-```{r}
+
+```r
 initial.set <- read.csv("activity.csv")
 str(initial.set)
 ```
 
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
+
 In the initial dataset, he date column is read as factor. It should be transformed from factor to date type object.
-```{r}
+
+```r
 initial.set[, 2] <- as.Date(initial.set[, 2])
 str(initial.set)
+```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
 Further looking at the values in the interval column, I find the minimum interval per day is 0 and the maximum is 2355 and increment by 5. The value in the interval column represents the time of the day with 0 being 0:00 and 2355 being 23:55. 
@@ -30,7 +41,8 @@ I didn't change the interval to time object since it is used in this analysis as
 ## Mean total number of steps taken per day
 
 To answer this question, all NA should be ignored and the total steps per day is calculated. To make the complete dataset tidy, I removed the interval column since it will not be used here.
-```{r}
+
+```r
 complete.set <- initial.set[complete.cases(initial.set),]
 
 library(plyr)
@@ -39,40 +51,57 @@ total.completeset <- subset(total.completeset, select = -c(interval))
 head(total.completeset)
 ```
 
+```
+##         date steps
+## 1 2012-10-02   126
+## 2 2012-10-03 11352
+## 3 2012-10-04 12116
+## 4 2012-10-05 13294
+## 5 2012-10-06 15420
+## 6 2012-10-07 11015
+```
+
 The total number of steps taken per day is shown in the following plot:
-```{r}
+
+```r
 hist(total.completeset$steps, 
      xlab = "Total number of steps / day", 
      main = "Histogram of total steps taken per day")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
 Calulcate the mean and the median of this total complete set data
-```{r}
+
+```r
 total.mean <- mean(total.completeset$steps)
 total.median <- median(total.completeset$steps)
 ```
-The mean of the total number of steps taken per day is `r total.mean` and the median is `r total.median`.
+The mean of the total number of steps taken per day is 1.0766189\times 10^{4} and the median is 10765.
 
 
 ## The average daily activity pattern
 
 Still using the complete dataset, the average number of steps taken across all days is calculated.
-```{r}
+
+```r
 average.completeset <- ddply(complete.set, "interval", numcolwise(mean))
 ```
 
 Find the maximum average number of steps across all the days:
-```{r}
+
+```r
 max.average <- average.completeset[average.completeset$steps == 
                                    max(average.completeset$steps),]
 
 #readable time 
 readabletime <- gsub("\\.", ":", toString(max.average$interval / 100))
 ```
-The 5-minute interval with maximum average number of steps across all the days is `r max.average$interval` which is starting at `r readabletime` 
+The 5-minute interval with maximum average number of steps across all the days is 835 which is starting at 8:35 
 
 Here is the time series plot of the averaged data:
-```{r}
+
+```r
 with(average.completeset, 
      plot(interval, steps, type="l", 
           main="Average steps per 5 minutes interval (daily)"))
@@ -83,23 +112,38 @@ text(max.average$interval, max.average$steps,
      pos=4, cex=0.7)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
 
 ## Imputing missing values
 
 All the analysis above using the complete data. All NA's are removed. 
 Checking the total rows of the missing values in the initial data set
-```{r}
+
+```r
 na.count <-sum(complete.cases(initial.set) == FALSE)
 ```
-The total number of missing values in the dataset is `r na.count`
+The total number of missing values in the dataset is 2304
 
 Looking at the first rows of the initial data set
-```{r}
+
+```r
 head(initial.set)
 ```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
 I use the mean value of interval (from the previous average data set) to fill in the missing values
-```{r}
+
+```r
 filled.set <- initial.set
 
 for (i in which(is.na(filled.set$steps))) 
@@ -109,8 +153,19 @@ for (i in which(is.na(filled.set$steps)))
 head(filled.set)
 ```
 
+```
+##       steps       date interval
+## 1 1.7169811 2012-10-01        0
+## 2 0.3396226 2012-10-01        5
+## 3 0.1320755 2012-10-01       10
+## 4 0.1509434 2012-10-01       15
+## 5 0.0754717 2012-10-01       20
+## 6 2.0943396 2012-10-01       25
+```
+
 Here is the historgram of the this filled data set
-```{r}
+
+```r
 total.filledset <- ddply(filled.set, "date", numcolwise(sum))
 
 hist(total.filledset$steps, 
@@ -118,12 +173,15 @@ hist(total.filledset$steps,
      main="Histogram of total steps taken per day")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+
 and calculating the mean and the median
-```{r}
+
+```r
 mean.filledset <- mean(total.filledset$steps)
 median.filledset <- median(total.filledset$steps)
 ```
-The mean of this filled data set is `r mean.filledset` and the median is `r median.filledset` 
+The mean of this filled data set is 1.0766189\times 10^{4} and the median is 1.0766189\times 10^{4} 
 
 These values don't differ so much from the estimates from the data set with NA removed. The mean stays the same ie. 10766 steps. The median changed slightly from 10765 to 10766.
 
@@ -131,7 +189,8 @@ These values don't differ so much from the estimates from the data set with NA r
 ## Differences in activity patterns between weekdays and weekends
 
 First, I add a new column named daytype to the data set to get the weekday from the date and later replaced 'Saturday' and 'SUnday' with 'weekend' and the rest with 'weekday'. And the later transform the daytype to factor.
-```{r}
+
+```r
 filled.set["daytype"] <- NA
 filled.set$daytype <- weekdays(filled.set$date)
 
@@ -143,16 +202,30 @@ filled.set[, "daytype"] <- as.factor(filled.set[, "daytype"])
 head(filled.set)
 ```
 
+```
+##       steps       date interval daytype
+## 1 1.7169811 2012-10-01        0 weekday
+## 2 0.3396226 2012-10-01        5 weekday
+## 3 0.1320755 2012-10-01       10 weekday
+## 4 0.1509434 2012-10-01       15 weekday
+## 5 0.0754717 2012-10-01       20 weekday
+## 6 2.0943396 2012-10-01       25 weekday
+```
+
 Calculate the average per interval
-```{r}
+
+```r
 average.filledset <- ddply(filled.set, .(interval, daytype), numcolwise(mean))
 ```
 
 And the plot to show the comparison between the weeend and the weekdays
-```{r}
+
+```r
 library(ggplot2)
 qplot(interval, steps, data = average.filledset, 
       facets = daytype~., geom = c("line"), color=daytype )
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
 
 It seems that this person makes more steps in the morning around 8 - 9 during the weekdays and more steps in the day hours in the weekend.
