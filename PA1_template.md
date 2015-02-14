@@ -1,3 +1,10 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
 # Reproducible Research: Peer Assessment 1
 
 This paper shows some analysis on the data from a personal activity monitoring device as part of the Reproducible Reserach course at Coursera. 
@@ -69,7 +76,7 @@ hist(total.completeset$steps,
      main = "Histogram of total steps taken per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 Calulcate the mean and the median of this total complete set data
 
@@ -77,7 +84,7 @@ Calulcate the mean and the median of this total complete set data
 total.mean <- mean(total.completeset$steps)
 total.median <- median(total.completeset$steps)
 ```
-The mean of the total number of steps taken per day is 1.0766189\times 10^{4} and the median is 10765.
+The mean of the total number of steps taken per day is 1.0766189 &times; 10<sup>4</sup> and the median is 10765.
 
 
 ## The average daily activity pattern
@@ -112,7 +119,7 @@ text(max.average$interval, max.average$steps,
      pos=4, cex=0.7)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
 
 
 ## Imputing missing values
@@ -173,7 +180,7 @@ hist(total.filledset$steps,
      main="Histogram of total steps taken per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png) 
 
 and calculating the mean and the median
 
@@ -181,7 +188,7 @@ and calculating the mean and the median
 mean.filledset <- mean(total.filledset$steps)
 median.filledset <- median(total.filledset$steps)
 ```
-The mean of this filled data set is 1.0766189\times 10^{4} and the median is 1.0766189\times 10^{4} 
+The mean of this filled data set is 1.0766189 &times; 10<sup>4</sup> and the median is 1.0766189 &times; 10<sup>4</sup> 
 
 These values don't differ so much from the estimates from the data set with NA removed. The mean stays the same ie. 10766 steps. The median changed slightly from 10765 to 10766.
 
@@ -226,6 +233,6 @@ qplot(interval, steps, data = average.filledset,
       facets = daytype~., geom = c("line"), color=daytype )
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png) 
 
 It seems that this person makes more steps in the morning around 8 - 9 during the weekdays and more steps in the day hours in the weekend.
